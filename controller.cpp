@@ -2,59 +2,81 @@
 
 Controller::Controller()
 {
-    videoW = 640;
-    videoH = 360;
-
-    videoW1_ROI = 0;
-    videoH1_ROI = 120;
-    videoW2_ROI = 640;
-    videoH2_ROI = 360;
-    videoRes    = CvSize (videoW, videoH);
-    cropAreaP1  = cvPoint(videoW1_ROI,	videoH1_ROI);
-    cropAreaP2  = cvPoint(videoW,	videoH);
-    srcImgOCV   = Mat (videoRes, DataType<float>::type);
-    frameNumber = 0;
+    /// @todo дописать что-нибудь, не должен же быть конструктор пустым?
 }
 
-int Controller::start()
+void Controller::start()
 {
-    //Получение входных данных
+    // Получение входных данных,
     InputData* inputData = new InputData();
-    //Проверка видео
+
+    // проверяем видеопоток на наличие данных (считываем первый кадр),
     if (inputData->getStream().read(srcImgOCV) == false)
     {
-        printf("W: End of video\n");
-        return 1; //end of video
+        // если невозможно считать данные, выходим.
+        std::cout << "W: End of video" << std::endl;
+        return;
     }
-    //Получаем данные о видео
 
-    //Получаем начальные условия (задаются пользователем)
+    // получаем данные о видео (разрешение) и ROI, заносим их в параметры класса
+    /// @todo дописать получение данных о видео и ROI
+    int videoW = 640;
+    int videoH = 360;
+    int videoW1_ROI = 0;
+    int videoH1_ROI = 120;
+    int videoW2_ROI = 640;
+    int videoH2_ROI = 360;
+    CvSize videoRes    = CvSize (videoW, videoH);
+    CvPoint cropAreaP1  = cvPoint(videoW1_ROI,	videoH1_ROI);
+    CvPoint cropAreaP2  = cvPoint(videoW2_ROI,	videoH2_ROI);
+    setData(videoRes, cropAreaP1, cropAreaP2);
 
-    //Запускаем детектор полосы
+    // получаем начальные условия (положение полос, задается пользователем),
+    /// @todo дописать получение начальных условий о положении полос
+
+    // запускаем детектор полосы,
     LineDetector * lineDetector = new LineDetector();
-    //Запускаем модуль управления автомобилем
+
+    // запускаем модуль управления автомобилем,
     CarDriver * carDriver = new CarDriver();
 
     while(cvWaitKey(1) != 27) //Esc
     {
 
         frameNumber+=1;
-        printf	("frameNumber=%d\n", frameNumber);
+        std::cout << "frameNumber=" << frameNumber << std::endl;
 
+        // считываем кадр из потока,
         if (inputData->getStream().read(srcImgOCV) == false)
-            break; //end of video
-        //для ускорения работы обрезаем видеокадр
-        Mat srcImgOCVROI = srcImgOCV(Rect(cropAreaP1, cropAreaP2));
+        {
+            // выходим, если кадров больше нет.
+            break;
+        }
+
+        // обрезаем видеокадр для ускорения работы,
+        Mat srcImgOCVROI = srcImgOCV(cv::Rect(cropAreaP1, cropAreaP2));
+
+        // запускаем обработчик полосы,
         lineDetector->detectLine(srcImgOCVROI);
         srcImgOCVROI.release();
 
-        //отправляем данные на контроллер автомобиля
+        // отправляем данные на контроллер автомобиля,
         carDriver->sendData(CarDriver::LINE_DETECTOR, lineDetector->getCarData());
 
-        namedWindow("Src");
-        imshow("Src", srcImgOCV);
+        // отображаем изображение ? в окне,
+        cv::namedWindow("Src");
+        cv::imshow("Src", srcImgOCV);
 
         srcImgOCV.release();
     }
-    return 0;
+    return;
+}
+
+void Controller::setData(CvSize tvideoRes, CvPoint tcropAreaP1, CvPoint tcropAreaP2)
+{
+    videoRes    = tvideoRes;
+    cropAreaP1  = tcropAreaP1;
+    cropAreaP2  = tcropAreaP2;
+    srcImgOCV   = Mat (videoRes, cv::DataType<float>::type);
+    frameNumber = 0;
 }

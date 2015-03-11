@@ -1,0 +1,86 @@
+\hypertarget{class_line_detector}{\section{Line\+Detector Class Reference}
+\label{class_line_detector}\index{Line\+Detector@{Line\+Detector}}
+}
+
+
+Данный класс реализует детектор линий.  
+
+
+
+
+{\ttfamily \#include $<$linedetector.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_line_detector_a556657ccf8bd36178c99ad92bcec5a97}{$\sim$\+Line\+Detector} ()
+\begin{DoxyCompactList}\small\item\em Деструктор по умолчанию \end{DoxyCompactList}\item 
+void \hyperlink{class_line_detector_aeaab653f2ebb44d55f985143070515f6}{detect\+Line} (Mat \&src\+Img)
+\begin{DoxyCompactList}\small\item\em Метод, запускающий детектор линий \end{DoxyCompactList}\item 
+Vec2i \hyperlink{class_line_detector_ac08b6ad11cc4092b49dc7ee62a3ead38}{get\+Car\+Data} ()
+\begin{DoxyCompactList}\small\item\em Метод, возвращающий расчитанные даннные скорости автомобиля и угла поворта колес. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{Indent}{\bf Конструкторы}\par
+{\em Конструктор по умолчанию }\begin{DoxyCompactItemize}
+\item 
+\hypertarget{class_line_detector_a39b34cdd80ad5d706b276bdf0b50c744}{{\bfseries Line\+Detector} ()}\label{class_line_detector_a39b34cdd80ad5d706b276bdf0b50c744}
+
+\end{DoxyCompactItemize}
+\end{Indent}
+
+
+\subsection{Detailed Description}
+Данный класс реализует детектор линий. 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_line_detector_a556657ccf8bd36178c99ad92bcec5a97}{\index{Line\+Detector@{Line\+Detector}!````~Line\+Detector@{$\sim$\+Line\+Detector}}
+\index{````~Line\+Detector@{$\sim$\+Line\+Detector}!Line\+Detector@{Line\+Detector}}
+\subsubsection[{$\sim$\+Line\+Detector}]{\setlength{\rightskip}{0pt plus 5cm}Line\+Detector\+::$\sim$\+Line\+Detector (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_line_detector_a556657ccf8bd36178c99ad92bcec5a97}
+
+
+Деструктор по умолчанию 
+
+\begin{DoxyRefDesc}{Todo}
+\item[\hyperlink{todo__todo000021}{Todo}]необходимо дописать! \end{DoxyRefDesc}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_line_detector_aeaab653f2ebb44d55f985143070515f6}{\index{Line\+Detector@{Line\+Detector}!detect\+Line@{detect\+Line}}
+\index{detect\+Line@{detect\+Line}!Line\+Detector@{Line\+Detector}}
+\subsubsection[{detect\+Line}]{\setlength{\rightskip}{0pt plus 5cm}void Line\+Detector\+::detect\+Line (
+\begin{DoxyParamCaption}
+\item[{Mat \&}]{src\+Img}
+\end{DoxyParamCaption}
+)}}\label{class_line_detector_aeaab653f2ebb44d55f985143070515f6}
+
+
+Метод, запускающий детектор линий 
+
+
+\begin{DoxyParams}{Parameters}
+{\em src\+Img} & -\/ исходное изображение \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_line_detector_ac08b6ad11cc4092b49dc7ee62a3ead38}{\index{Line\+Detector@{Line\+Detector}!get\+Car\+Data@{get\+Car\+Data}}
+\index{get\+Car\+Data@{get\+Car\+Data}!Line\+Detector@{Line\+Detector}}
+\subsubsection[{get\+Car\+Data}]{\setlength{\rightskip}{0pt plus 5cm}Vec2i Line\+Detector\+::get\+Car\+Data (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_line_detector_ac08b6ad11cc4092b49dc7ee62a3ead38}
+
+
+Метод, возвращающий расчитанные даннные скорости автомобиля и угла поворта колес. 
+
+\begin{DoxyReturn}{Returns}
+контейнер, содержащий два целочисленных значений в диапазоне от 0 до 100, где первое значение является углом поворота колес, а второе значение -\/ скорость автомобиля 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+linedetector.\+h\item 
+linedetector.\+cpp\end{DoxyCompactItemize}

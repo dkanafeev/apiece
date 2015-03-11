@@ -2,6 +2,7 @@
 
 InputData::InputData()
 {
+    /// @todo доделать получение данных начальных точек.
     leftPoint1 = CvPoint (140, 360);
     leftPoint2 = CvPoint (305, 150);
     rightPoint1 = CvPoint (500, 360);
@@ -19,7 +20,7 @@ void InputData::VideoInput(int mode = TEST_MODE)
             stream = cv::VideoCapture ("E:/Test.mp4");
             if (stream.isOpened() == false)
             {
-                printf ("E: Cannot open test video! \n");
+                std::cout << "E: Cannot open test video!" <<std::endl;
                 exit(1);
             }
             break;
@@ -29,14 +30,15 @@ void InputData::VideoInput(int mode = TEST_MODE)
             stream = cv::VideoCapture (0);
             if (stream.isOpened() == false)
             {
-                printf ("E: Cannot open video! \n");
+                std::cout << "E: Cannot open video from camera!" <<std::endl;
                 exit(1);
             }
             break;
         }
     default:
         {
-            printf ("E: Unknown mode! \n");
+            std::cout << "E: Unknown mode!"  <<std::endl;
+
         }
     }
 }
