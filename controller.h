@@ -13,11 +13,11 @@
 class Controller
 {
 private:
-    CvSize	videoRes;       /**< разрешение входного видеопотока */
-    CvPoint	cropAreaP1;     /**< первая точка ROI*/
-    CvPoint	cropAreaP2;     /**< вторая точка ROI */
-    Mat     srcImgOCV;      /**< обрабатываемый кадр из видеопотока*/
-    int     frameNumber;    /**< счетчик кадров */
+    cv::Size	videoRes;       /**< разрешение входного видеопотока */
+    cv::Rect    videoROI;       /**< интересующая облать на кадре */
+    Mat         srcImgOCV;      /**< обрабатываемый кадр из видеопотока */
+    Mat         srcImgOCVROI;   /**< обрезанный кадр из видеопотока */
+    int         frameNumber;    /**< счетчик кадров */
 
 public:
     /// @brief Контруктор по умолчанию
@@ -43,7 +43,7 @@ public:
      * @param tcropAreaP1 - первая точка ROI
      * @param tcropAreaP2 - вторая точка ROI
      */
-    void setData(CvSize tvideoRes, CvPoint tcropAreaP1, CvPoint tcropAreaP2);
+    void setData(cv::Size tvideoRes, cv::Rect tvideoROI);
 };
 
 #endif // CONTROLLER_H

@@ -10,26 +10,8 @@ void Controller::start()
     // Получение входных данных,
     InputData* inputData = new InputData();
 
-    // проверяем видеопоток на наличие данных (считываем первый кадр),
-    if (inputData->getStream().read(srcImgOCV) == false)
-    {
-        // если невозможно считать данные, выходим.
-        std::cout << "W: End of video" << std::endl;
-        return;
-    }
-
     // получаем данные о видео (разрешение) и ROI, заносим их в параметры класса
-    /// @todo дописать получение данных о видео и ROI
-    int videoW = 640;
-    int videoH = 360;
-    int videoW1_ROI = 0;
-    int videoH1_ROI = 120;
-    int videoW2_ROI = 640;
-    int videoH2_ROI = 360;
-    CvSize videoRes    = CvSize (videoW, videoH);
-    CvPoint cropAreaP1  = cvPoint(videoW1_ROI,	videoH1_ROI);
-    CvPoint cropAreaP2  = cvPoint(videoW2_ROI,	videoH2_ROI);
-    setData(videoRes, cropAreaP1, cropAreaP2);
+    setData(inputData->getVideoSize(), inputData->getVideoROI());
 
     // получаем начальные условия (положение полос, задается пользователем),
     /// @todo дописать получение начальных условий о положении полос
@@ -54,11 +36,10 @@ void Controller::start()
         }
 
         // обрезаем видеокадр для ускорения работы,
-        Mat srcImgOCVROI = srcImgOCV(cv::Rect(cropAreaP1, cropAreaP2));
+        srcImgOCVROI = srcImgOCV(inputData->getVideoROI());
 
         // запускаем обработчик полосы,
         lineDetector->detectLine(srcImgOCVROI);
-        srcImgOCVROI.release();
 
         // отправляем данные на контроллер автомобиля,
         carDriver->sendData(CarDriver::LINE_DETECTOR, lineDetector->getCarData());
@@ -67,16 +48,21 @@ void Controller::start()
         cv::namedWindow("Src");
         cv::imshow("Src", srcImgOCV);
 
+        // освобождаем память
         srcImgOCV.release();
+        srcImgOCVROI.release();
     }
+    //завершаем работу
+    // останавливаем работу модулей
+    /// @todo Завершение работы модулей в Controller::start()
+    //выходим
     return;
 }
 
-void Controller::setData(CvSize tvideoRes, CvPoint tcropAreaP1, CvPoint tcropAreaP2)
+void Controller::setData(cv::Size tvideoRes, cv::Rect tvideoROI)
 {
     videoRes    = tvideoRes;
-    cropAreaP1  = tcropAreaP1;
-    cropAreaP2  = tcropAreaP2;
-    srcImgOCV   = Mat (videoRes, cv::DataType<float>::type);
+    videoROI    = tvideoROI;
+    srcImgOCV   = Mat (videoRes, cv::DataType<uchar>::type);
     frameNumber = 0;
 }

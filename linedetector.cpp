@@ -37,63 +37,47 @@ int LineDetector::houghOpenCV(const Mat &srcImg)
 {
     std::cout << "houghOpenCV " << std::endl;
 
-    Mat grayImg         = Mat( srcImg.size(), 8, 1 );
-    Mat thresholdImg    = Mat( srcImg.size(), 8, 1 );
-    Mat cannyImg        = Mat( srcImg.size(), 8, 1 );
+    Mat grayImg         = Mat( srcImg.size(), CV_8UC1, Scalar (0) );
+    Mat gaussImg        = Mat( srcImg.size(), CV_8UC1, Scalar (0) );
+    Mat thresholdImg    = Mat( srcImg.size(), CV_8UC1, Scalar (0) );
+    Mat cannyImg        = Mat( srcImg.size(), CV_8UC1, Scalar (0) );
     Mat lineImg         = Mat( srcImg.size(), CV_8UC3, Scalar (0,0,0) );
-    Mat dstImg          = Mat( srcImg.size(), 8, 3 );
+    Mat dstImg          = Mat( srcImg.size(), CV_8UC3, Scalar (0,0,0) );
 
     // перевод в чб
     cv::cvtColor(srcImg, grayImg, CV_BGR2GRAY);
 
     // бинаризация по пороговому значению
-    cv::threshold(grayImg, thresholdImg, 127, 255, CV_THRESH_BINARY);
+    //cv::threshold(grayImg, thresholdImg, 127, 255, CV_THRESH_BINARY);
 
-    // наложение
-    /// @todo Доделать наложение или удалить
+    // наложение c предыдущими кадрами
+    /// @todo Доделать наложение либо удалить
+
+    // размытие
+    cv::GaussianBlur( grayImg, gaussImg, cv::Size( 5, 5 ), 0, 0 );
 
     // детектирование границ и наложение кадров
-    cv::Canny ( grayImg, cannyImg, 250, 200);
-
-    // хранилище памяти для хранения найденных линий
-    std::vector<cv::Vec2f> lines;
-
-    // нахождение линий
-    cv::HoughLines(cannyImg, lines, 1, CV_PI/180, 150, 0, 0 );
+    cv::Canny ( gaussImg, cannyImg, 250, 200);
 
     // конвертируем в цветное изображение
     cv::cvtColor( cannyImg, dstImg, CV_GRAY2BGR );
 
+    // хранилище памяти для хранения найденных линий
+    std::vector<cv::Vec4i> lines;
+
+    // нахождение линий
+    cv::HoughLinesP( cannyImg, lines, 1, CV_PI/180, 80, 10, 10 );
+
+    // сортировка и уточнение линии
+    /// @todo сделать сортировку и уточнение линии
+
     // нарисуем найденные линии
     for( size_t i = 0; i < lines.size(); i++ )
     {
-        float rho = lines[i][0], theta = lines[i][1];
-        if( 1 || theta>CV_PI/180*(180 - angle) || theta<CV_PI/180*(180 + angle))
-        {
-            Point pt1, pt2;
-            double a = cos(theta), b = sin(theta);
-            double x0 = a*rho, y0 = b*rho;
-            pt1.x = cvRound(x0 + 1000*(-b));
-            pt1.y = cvRound(y0 + 1000*(a));
-            pt2.x = cvRound(x0 - 1000*(-b));
-            pt2.y = cvRound(y0 - 1000*(a));
-            cv::line( dstImg, pt1, pt2, Scalar(0,0,255), 3, CV_AA);
-        }
-    }
-
-    // хранилище памяти для хранения найденных линий
-    std::vector<cv::Vec4i> linesP;
-
-    // нахождение линий
-    cv::HoughLinesP( cannyImg, linesP, 1, CV_PI/180, 80, 10, 10 );
-
-    // нарисуем найденные линии
-    for( size_t i = 0; i < linesP.size(); i++ )
-    {
-        cv::line( lineImg, Point(linesP[i][0], linesP[i][1]),
-              Point(linesP[i][2], linesP[i][3]), Scalar(0,255,0), 3, 8 );
-        cv::line( srcImg, Point(linesP[i][0], linesP[i][1]),
-              Point(linesP[i][2], linesP[i][3]), Scalar(0,255,0), 3, 8 );
+        cv::line( lineImg, Point(lines[i][0], lines[i][1]),
+              Point(lines[i][2], lines[i][3]), Scalar(0,255,0), 3, 8 );
+        cv::line( srcImg, Point(lines[i][0], lines[i][1]),
+              Point(lines[i][2], lines[i][3]), Scalar(0,255,0), 3, 8 );
     }
     // показываем
     cv::namedWindow("Lines", CV_WINDOW_AUTOSIZE);       //create a window with the name "MyWindow"
@@ -102,76 +86,19 @@ int LineDetector::houghOpenCV(const Mat &srcImg)
     cv::imshow("HoughLines", dstImg);                   //display the image which is stored in the 'img' in the "MyWindow" window
 
     // определяем скорость автомобиля и угол поворота колес
-    /// @todo Доделать определение скорости автомобиля и угла поворота колес
-    carDataFinder(dstImg, 25, 5);
+    carDataFinder();
 
     // освобождаем ресурсы
-    grayImg.release();
-    thresholdImg.release();
-    cannyImg.release();
     dstImg.release();
+    grayImg.release();
+    gaussImg.release();
+    cannyImg.release();
+    thresholdImg.release();
+
     return 0;
 }
 
-void LineDetector::carDataFinder(Mat& srcImg, int nsensors, int step, int start)
+void LineDetector::carDataFinder()
 {
-    ///@todo Доделать, в данный момент метод отключен
-    return;
 
-    uint8_t* ptr = (uint8_t*)srcImg.data;
-    int cn = srcImg.channels();
-    /// @todo assert - nsensor*step < src.size().height
-    std::vector<Vec2i> bluePix;
-    std::vector<Vec2i> greenPix;
-    std::vector<Vec2i> redPix;
-    std::vector<Vec2i> whitePix;
-    for (int y = start; y < nsensors * step; y+=step)
-    {
-        for (int i =  - delta; i < delta; i++)
-        {
-            int isBlue = 0;
-            int isGreen = 0;
-            int isRed = 0;
-            int x = (y - b)/k + i;
-            int position = ( x * srcImg.cols + y) * cn ;
-            if (ptr[position] == 255)
-            {
-               isBlue = 1;
-            }
-            if (ptr[ position + 1] == 255)
-            {
-                isGreen = 1;
-            }
-            if (ptr[ position + 2] == 255)
-            {
-                isRed = 1;
-            }
-            if (!isRed && !isGreen && isBlue)
-            {
-                //blue pixel
-                bluePix.push_back(Vec2i(y, i));
-
-            }
-            if (isRed && !isGreen && !isBlue)
-            {
-                //red pixel
-                redPix.push_back(Vec2i(y, i));
-            }
-            if (!isRed && isGreen && !isBlue)
-            {
-                //green pixel
-                greenPix.push_back(Vec2i(y, i));
-            }
-            if (isRed && isGreen && isBlue)
-            {
-                //white pixel
-                whitePix.push_back(Vec2i(y, i));
-            }
-        }
-    }
-    int sizeGreen = greenPix.size();
-    int deltaGreenSum = 0;
-    for (int i = 0; i < sizeGreen; i++);
-        //deltaGreenSum += greenPix.pop_back();
-    deltaGreenSum/=sizeGreen;
 }
