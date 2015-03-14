@@ -1,5 +1,6 @@
 /**
   * @mainpage Car Line Detector
+  * @author Damir Kanafeev
   * <pre>
   * Курсовая работа
   * НИУ ВШЭ Нижегородский филиал

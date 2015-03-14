@@ -45,6 +45,12 @@ private:
      * @param mode - режим работы, выбирается из перечисления MODE
      */
     void VideoInput(int);
+    /**
+      *
+      *
+      */
+    void getPositionData(){}
+
 };
 
 #endif // INPUTDATA_H

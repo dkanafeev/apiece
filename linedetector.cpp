@@ -18,8 +18,8 @@ void LineDetector::detectLine(Mat &srcImg)
 void LineDetector::colorReduce(Mat& image, int div)
 {
     std::cout << "colorReduce " << std::endl;
-    int nl = image.rows;                    /// number of lines
-    int nc = image.cols * image.channels(); /// number of elements per line
+    int nl = image.rows;                    // number of lines
+    int nc = image.cols * image.channels(); // number of elements per line
 
     for (int j = 0; j < nl; j++)
     {
@@ -40,6 +40,7 @@ int LineDetector::houghOpenCV(const Mat &srcImg)
     Mat grayImg         = Mat( srcImg.size(), 8, 1 );
     Mat thresholdImg    = Mat( srcImg.size(), 8, 1 );
     Mat cannyImg        = Mat( srcImg.size(), 8, 1 );
+    Mat lineImg         = Mat( srcImg.size(), CV_8UC3, Scalar (0,0,0) );
     Mat dstImg          = Mat( srcImg.size(), 8, 3 );
 
     // перевод в чб
@@ -89,12 +90,16 @@ int LineDetector::houghOpenCV(const Mat &srcImg)
     // нарисуем найденные линии
     for( size_t i = 0; i < linesP.size(); i++ )
     {
-        cv::line( dstImg, Point(linesP[i][0], linesP[i][1]),
+        cv::line( lineImg, Point(linesP[i][0], linesP[i][1]),
+              Point(linesP[i][2], linesP[i][3]), Scalar(0,255,0), 3, 8 );
+        cv::line( srcImg, Point(linesP[i][0], linesP[i][1]),
               Point(linesP[i][2], linesP[i][3]), Scalar(0,255,0), 3, 8 );
     }
     // показываем
-    cv::namedWindow("HoughLines", CV_WINDOW_AUTOSIZE); //create a window with the name "MyWindow"
-    cv::imshow("HoughLines", dstImg); //display the image which is stored in the 'img' in the "MyWindow" window
+    cv::namedWindow("Lines", CV_WINDOW_AUTOSIZE);       //create a window with the name "MyWindow"
+    cv::imshow("Lines", lineImg);                       //display the image which is stored in the 'img' in the "MyWindow" window
+    cv::namedWindow("HoughLines", CV_WINDOW_AUTOSIZE);  //create a window with the name "MyWindow"
+    cv::imshow("HoughLines", dstImg);                   //display the image which is stored in the 'img' in the "MyWindow" window
 
     // определяем скорость автомобиля и угол поворота колес
     /// @todo Доделать определение скорости автомобиля и угла поворота колес
@@ -115,7 +120,7 @@ void LineDetector::carDataFinder(Mat& srcImg, int nsensors, int step, int start)
 
     uint8_t* ptr = (uint8_t*)srcImg.data;
     int cn = srcImg.channels();
-    //assert - nsensor*step < src.size().height
+    /// @todo assert - nsensor*step < src.size().height
     std::vector<Vec2i> bluePix;
     std::vector<Vec2i> greenPix;
     std::vector<Vec2i> redPix;
