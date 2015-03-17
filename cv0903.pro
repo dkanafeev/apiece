@@ -14,7 +14,6 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
-
 SOURCES += main.cpp \
     cardriver.cpp \
     controller.cpp \
@@ -26,6 +25,8 @@ HEADERS += \
     controller.h \
     linedetector.h \
     inputdata.h
+
+QMAKE_CXXFLAGS += -std=c++11
 
 INCLUDEPATH += E:\Dev\Tools\opencv_build_mingw\install\include
 LIBS += -L"E:/Dev/Tools/opencv_build_mingw/install/x64/mingw/bin"
