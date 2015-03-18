@@ -73,10 +73,10 @@ int LineDetector::houghOpenCV(const Mat &srcImg)
     processLines(lines, cannyImg, srcImg);
 
     // показываем
-    cv::namedWindow("Lines", CV_WINDOW_AUTOSIZE);
-    cv::imshow("Lines", lineImg);
-    cv::namedWindow("HoughLines", CV_WINDOW_AUTOSIZE);
-    cv::imshow("HoughLines", dstImg);
+//    cv::namedWindow("Lines", CV_WINDOW_AUTOSIZE);
+//    cv::imshow("Lines", lineImg);
+//    cv::namedWindow("HoughLines", CV_WINDOW_AUTOSIZE);
+//    cv::imshow("HoughLines", dstImg);
 
     // освобождаем ресурсы
     dstImg.release();
@@ -160,7 +160,7 @@ void LineDetector::processSide(std::vector<cv::Vec4i> lines, cv::Vec4i& main_lin
 {
     /// @todo переписать этот код
 
-    int x = edges.size().width/2;
+    //int x = edges.size().width/2;
     int direction = right ? 1 : -1 ;
     int mid_main = right ? 0 :  edges.size().width;
     for (std::vector<cv::Vec4i>::iterator line = lines.begin(); line < lines.end(); line++)
