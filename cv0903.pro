@@ -27,6 +27,7 @@ HEADERS += \
     inputdata.h
 
 QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS +=-static
 
 INCLUDEPATH += E:\Dev\Tools\opencv_build_mingw\install\include
 LIBS += -L"E:/Dev/Tools/opencv_build_mingw/install/x64/mingw/bin"

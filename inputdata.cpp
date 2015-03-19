@@ -2,12 +2,6 @@
 
 InputData::InputData()
 {
-    /// @todo доделать получение данных начальных точек либо удалить
-    //leftPoint1 = CvPoint (140, 360);
-    //leftPoint2 = CvPoint (305, 150);
-    //rightPoint1 = CvPoint (500, 360);
-    //rightPoint2 = CvPoint (360, 150);
-
     VideoInput(TEST_MODE);
 }
 

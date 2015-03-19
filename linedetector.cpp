@@ -10,9 +10,10 @@ LineDetector::LineDetector()
     angle = 30;
 }
 
-void LineDetector::detectLine(Mat &srcImg)
+void LineDetector::detectLine(Mat &srcImg, std::vector<cv::Point> defaultPoints)
 {
     std::cout << "detectLine..." << std::endl;
+    this->defaultPoints = defaultPoints;
     houghOpenCV(srcImg);
 }
 
@@ -98,10 +99,14 @@ void LineDetector::processLines(std::vector<cv::Vec4i>& lines, Mat edges, Mat te
     {
         int dx = lines[i][0] - lines[i][2];
         int dy = lines[i][1] - lines[i][3];
-        float angle = atan2f(dy, dx) * 180.0 /CV_PI;
+        float angle = atan2f(dy, dx) * 180.0 / CV_PI;
 
+        // Исключаем вертикальные горизонтальные линии
+        if (angle <= 10 && angle >= 180 - 10) {
+            continue;
+        }
         // Исключаем горизонтальные линии
-        if (angle <= 30 && angle >= 180 - 30) {
+        if (angle <= 90 - 10 && angle >= 90 + 10) {
             continue;
         }
 
@@ -160,9 +165,10 @@ void LineDetector::processSide(std::vector<cv::Vec4i> lines, cv::Vec4i& main_lin
 {
     /// @todo переписать этот код
 
-    //int x = edges.size().width/2;
+    int x = edges.size().width/2;
     int direction = right ? 1 : -1 ;
     int mid_main = right ? 0 :  edges.size().width;
+
     for (std::vector<cv::Vec4i>::iterator line = lines.begin(); line < lines.end(); line++)
     {
         int midx = ((*line)[0] + (*line)[2]) / 2;

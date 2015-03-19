@@ -38,6 +38,12 @@ void Controller::start()
     cv::namedWindow("SRC_ROI");
     cv::setMouseCallback("SRC_ROI", onMouse, this);
 
+    // отображаем изображение исходное в окне,
+    cv::imshow("SRC", srcImgOCV);
+
+    // отображаем изображение исходное обрезаное в окне,
+    cv::imshow("SRC_ROI", srcImgOCVROI);
+
     while (isWork)
     {
 
@@ -52,20 +58,21 @@ void Controller::start()
             readImage();
 
             // запускаем обработчик полосы,
-            lineDetector->detectLine(srcImgOCVROI);
+            lineDetector->detectLine(srcImgOCVROI, defaultPoints);
 
             // отправляем данные на контроллер автомобиля,
             carDriver->sendData(CarDriver::LINE_DETECTOR, lineDetector->getCarData());
 
             //Рисуем линии зоны полосы по умолчанию
             drawDefault();
+
+            // отображаем изображение исходное в окне,
+            cv::imshow("SRC", srcImgOCV);
+
+            // отображаем изображение исходное обрезаное в окне,
+            cv::imshow("SRC_ROI", srcImgOCVROI);
         }
 
-        // отображаем изображение исходное в окне,
-        cv::imshow("SRC", srcImgOCV);
-
-        // отображаем изображение исходное обрезаное в окне,
-        cv::imshow("SRC_ROI", srcImgOCVROI);
     }
 
     //выходим

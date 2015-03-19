@@ -33,37 +33,7 @@ private:
     double  b;              /**< @todo Подробное описание*/
     Mat previousThreshold;  /**< @todo Подробное описание*/
 
-    struct Status
-    {
-        Status(): reset(true), lost(0 ){}
-        float k, b;
-        bool reset;
-        int lost;
-    };
-
-    Status laneR, laneL;
-
-    enum{
-        SCAN_STEP = 5,			  // in pixels
-        LINE_REJECT_DEGREES = 10, // in degrees
-        BW_TRESHOLD = 250,		  // edge response strength to recognize for 'WHITE'
-        BORDERX = 10,			  // px, skip this much from left & right borders
-        MAX_RESPONSE_DIST = 5,	  // px
-
-        CANNY_MIN_TRESHOLD = 1,	  // edge detector minimum hysteresis threshold
-        CANNY_MAX_TRESHOLD = 100, // edge detector maximum hysteresis threshold
-
-        HOUGH_TRESHOLD = 50,		// line approval vote threshold
-        HOUGH_MIN_LINE_LENGTH = 50,	// remove lines shorter than this treshold
-        HOUGH_MAX_LINE_GAP = 100,   // join lines to one with smaller than this gaps
-
-        CAR_DETECT_LINES = 4,    // minimum lines for a region to pass validation as a 'CAR'
-        CAR_H_LINE_LENGTH = 10,  // minimum horizontal line length from car body in px
-
-        MAX_VEHICLE_SAMPLES = 30,      // max vehicle detection sampling history
-        CAR_DETECT_POSITIVE_SAMPLES = MAX_VEHICLE_SAMPLES-2, // probability positive matches for valid car
-        MAX_VEHICLE_NO_UPDATE_FREQ = 15 // remove car after this much no update frames
-    };
+    std::vector<cv::Point> defaultPoints;
 
     /**
       * @brief Метод, совершающий огрубление изображения
@@ -108,8 +78,9 @@ public:
     /**
      * @brief Метод, запускающий детектор линий
      * @param srcImg - исходное изображение
+     * @param defaultPoints - ???
      */
-    void detectLine     (Mat &srcImg);
+    void detectLine     (Mat &srcImg, std::vector<cv::Point>   defaultPoints);
 
     /** @brief Метод, возвращающий расчитанные даннные скорости автомобиля
      * и угла поворта колес.
