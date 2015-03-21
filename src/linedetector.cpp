@@ -93,6 +93,7 @@ void LineDetector::processLines(std::vector<cv::Vec4i>& lines, Mat edges, Mat te
     /// @todo сделать сортировку и уточнение линии
     // разделим правые и левые линии
     std::vector<cv::Vec4i> left, right;
+    int delta_angle = 10;
 
     for ( size_t i = 0; i < lines.size(); i++ )
     {
@@ -101,11 +102,11 @@ void LineDetector::processLines(std::vector<cv::Vec4i>& lines, Mat edges, Mat te
         float angle = atan2f(dy, dx) * 180.0 / CV_PI;
 
         // Исключаем вертикальные горизонтальные линии
-        if (angle <= 10 && angle >= 180 - 10) {
+        if (angle <= delta_angle && angle >= 180 - delta_angle) {
             continue;
         }
         // Исключаем горизонтальные линии
-        if (angle <= 90 - 10 && angle >= 90 + 10) {
+        if (angle <= 90 - delta_angle && angle >= 90 + delta_angle) {
             continue;
         }
 
@@ -141,12 +142,12 @@ void LineDetector::processLines(std::vector<cv::Vec4i>& lines, Mat edges, Mat te
     //запускаем обработку правых линий для поиска главной линии
     cv::Vec4i rightLine;
     convectPointsToVec4i(defaultPoints[0], defaultPoints[1], rightLine);
-    processSide(left, main_left, rightLine);
+    processSide(left, main_left, rightLine, temp_frame);
 
     //запускаем обработку правых линий для поиска главной линии
     cv::Vec4i leftLine;
     convectPointsToVec4i(defaultPoints[2], defaultPoints[3], leftLine);
-    processSide(right, main_right, leftLine);
+    processSide(right, main_right, leftLine, temp_frame);
 
     // определяем скорость автомобиля и угол поворота колес
     carDataFinder(main_left, false);
@@ -167,18 +168,27 @@ void LineDetector::distanceLinePoint(cv::Point point, float a, float b, float c,
     result = abs(a*point.x + b*point.y + c)/sqrt(powl(a, 2) + powl(b, 2));
 }
 
-void LineDetector::processSide(std::vector<cv::Vec4i> lines, cv::Vec4i& main_line, cv::Vec4i defaultLine)
-{
-    /// @todo переписать этот код
-    float a = defaultLine[3] - defaultLine[1];
-    float b = defaultLine[0] - defaultLine[2];
-    float c = defaultLine[0] * (-a) + defaultLine[1] * (-b);
+void LineDetector::processSide(std::vector<cv::Vec4i> lines, cv::Vec4i& main_line, cv::Vec4i defaultLine, cv::Mat output)
+{    
+    // получаем уравнение прямой defaultLine в виде ax + by + c = 0
+    const float a = defaultLine[3] - defaultLine[1];
+    const float b = defaultLine[0] - defaultLine[2];
+    const float c = defaultLine[0] * (-a) + defaultLine[1] * (-b);
 
-    float h1 = 10.0;
-    float h2 = 10.0;
+    // вывод линии на экран
+    cv::line(output, Point(defaultLine[0], defaultLine[1]),
+              Point(defaultLine[2], defaultLine[3]), Scalar(0,0,255), 3, 8 );
+
+    // начинаем работы по поиску главной линии
+    float h1 = 20.0;
+    float h2 = 20.0;
 
     float distance_1 = 0;
     float distance_2 = 0;
+
+    std::vector<cv::Vec4i> goodLines;
+    std::vector<cv::Vec3f> goodLinesEquation;
+    cv::Vec4i tempLine;
 
     for (std::vector<cv::Vec4i>::iterator line = lines.begin(); line < lines.end(); line++)
     {
@@ -187,14 +197,35 @@ void LineDetector::processSide(std::vector<cv::Vec4i> lines, cv::Vec4i& main_lin
         convectVec4iToPoints(*line, point1, point2);
         distanceLinePoint(point1, a, b, c, distance_1);
         distanceLinePoint(point2, a, b, c, distance_2);
+
         std::cout<<" dis1 "<<distance_1<<" dis2 "<<distance_2<<std::endl;
+        // выбираем отрезки, близкие к defaultLine
         if (distance_1 < h1 || distance_2 < h2)
         {
-            h1 = distance_1;
-            h2 = distance_2;
-            main_line = *line;
+            // ищем их уравнения и записываем в матрицу
+            tempLine = *line;
+            float a_tmp = tempLine[3] - tempLine[1];
+            float b_tmp = tempLine[0] - tempLine[2];
+            float c_tmp = tempLine[0] * (-a_tmp) + tempLine[1] * (-b_tmp);
+
+            goodLinesEquation.push_back(cv::Vec3f(a_tmp, b_tmp, c_tmp));
+            goodLines.push_back(tempLine);
         };
     }
+    // выводим промежуточчный результат - близкие линии
+    for (std::vector<cv::Vec4i>::iterator line = goodLines.begin(); line < goodLines.end(); line++)
+    {
+        cv::line(output, Point((*line)[0], (*line)[1]),
+                  Point((*line)[2], (*line)[3]), Scalar(255,255,0), 3, 8 );
+    }
+
+    // делаем размытие матрицы
+
+    // отсекаем ненужные ...
+
+    // получаем прямую и записываем в main_line
+
+
 }
 
 void LineDetector::carDataFinder(cv::Vec4i& main_line, bool right)

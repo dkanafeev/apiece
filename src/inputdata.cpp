@@ -11,7 +11,7 @@ void InputData::VideoInput(int mode = TEST_MODE)
     {
     case TEST_MODE:
         {
-            stream = cv::VideoCapture ("../testdata/test.mp4");
+            stream = cv::VideoCapture ("E:/test.mp4");
             if (stream.isOpened() == false)
             {
                 std::cerr << "E: Cannot open test video!" <<std::endl;

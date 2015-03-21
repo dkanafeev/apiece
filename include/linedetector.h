@@ -62,7 +62,7 @@ private:
     void carDataFinder(cv::Vec4i& main_line, bool right);
 
     void processLines(std::vector<cv::Vec4i>& lines, Mat edges, Mat temp_frame);
-    void processSide (std::vector<cv::Vec4i> lines, cv::Vec4i& main_line, cv::Vec4i defaultLine);
+    void processSide (std::vector<cv::Vec4i> lines, cv::Vec4i& main_line, cv::Vec4i defaultLine, cv::Mat output);
 
 public:
     /// @name Конструкторы

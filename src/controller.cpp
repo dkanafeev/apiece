@@ -136,6 +136,7 @@ void Controller::keyStatus()
 
 void Controller::drawDefault()
 {
+    return;
     /// @todo Может есть другой вариант этого кода?
     /// @code
     /// @{

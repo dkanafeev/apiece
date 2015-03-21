@@ -1,1 +1,2 @@
-APIECE - Autopilot in every car
+TODO: write README.md
+This is a prototype of simple car autopilot (lol)
