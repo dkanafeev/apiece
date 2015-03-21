@@ -32,7 +32,7 @@
   * модуля без последствий при соблюдении всех характеристик заменяемого блока.
   */
 
-#include <controller.h>
+#include <include/controller.h>
 
 int main()
 {

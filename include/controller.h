@@ -1,9 +1,9 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include <linedetector.h>
-#include <cardriver.h>
-#include <inputdata.h>
+#include <include/linedetector.h>
+#include <include/cardriver.h>
+#include <include/inputdata.h>
 
 /**
 @class Controller
