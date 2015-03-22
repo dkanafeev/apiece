@@ -35,10 +35,6 @@ private:
     /// @brief Метод, который проверяет нажатие клавиш
     void keyStatus();
 
-    /// @brief Метод, который рисует фигуру с начальными значениями
-    void drawDefault();
-
-
 public:
     /// @brief Контруктор по умолчанию
     Controller ();
@@ -66,7 +62,6 @@ public:
     void setData(cv::Size tvideoRes, cv::Rect tvideoROI);
 
     /// @brief обработчки сигналов от мыши, чтение координат начальных точек
-    /// CallBackFunc
     static void onMouse(int event, int x, int y, int, void* userdata);
 };
 

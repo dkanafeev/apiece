@@ -46,7 +46,6 @@ void Controller::start()
 
     while (isWork)
     {
-
         keyStatus();
 
         if (isRun && defaultPoints.size() == 4)
@@ -63,18 +62,13 @@ void Controller::start()
             // отправляем данные на контроллер автомобиля,
             carDriver->sendData(CarDriver::LINE_DETECTOR, lineDetector->getCarData());
 
-            //Рисуем линии зоны полосы по умолчанию
-            drawDefault();
-
             // отображаем изображение исходное в окне,
             cv::imshow("SRC", srcImgOCV);
 
             // отображаем изображение исходное обрезаное в окне,
             cv::imshow("SRC_ROI", srcImgOCVROI);
         }
-
     }
-
     //выходим
 }
 
@@ -134,25 +128,6 @@ void Controller::keyStatus()
     }
 }
 
-void Controller::drawDefault()
-{
-    return;
-    /// @todo Может есть другой вариант этого кода?
-    /// @code
-    /// @{
-    std::vector<cv::Point>::iterator it1 = defaultPoints.begin();
-    std::vector<cv::Point>::iterator it2 = ++defaultPoints.begin();
-    std::vector<cv::Point>::iterator it3 = ++++defaultPoints.begin();
-    std::vector<cv::Point>::iterator it4 = ++++++defaultPoints.begin();
-
-    cv::line( srcImgOCVROI, *it1, *it2, Scalar(0,0,255), 3, 8 );
-    cv::line( srcImgOCVROI, *it2, *it3, Scalar(0,0,255), 3, 8 );
-    cv::line( srcImgOCVROI, *it3, *it4, Scalar(0,0,255), 3, 8 );
-    cv::line( srcImgOCVROI, *it4, *it1, Scalar(0,0,255), 3, 8 );
-    /// @}
-}
-
-
 void Controller::onMouse(int event, int x, int y, int, void* userdata)
 {
     assert (userdata != nullptr);
@@ -163,8 +138,8 @@ void Controller::onMouse(int event, int x, int y, int, void* userdata)
 
 void Controller::readDefaultPoints(int event, int x, int y)
 {
-     if  ( event == cv::EVENT_LBUTTONDOWN )
-     {
+    if  ( event == cv::EVENT_LBUTTONDOWN )
+    {
         std::cout << "Left button of the mouse is clicked" << std::endl;
         std::cout << "Position (" << x << ", " << y << ")" << std::endl;
         if (defaultPoints.size() < 4)
@@ -177,6 +152,5 @@ void Controller::readDefaultPoints(int event, int x, int y)
             defaultPoints.clear();
             defaultPoints.push_back(cv::Point(x,y));
         }
-
-     }
+    }
 }

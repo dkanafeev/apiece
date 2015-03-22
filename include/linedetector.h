@@ -32,12 +32,38 @@ private:
     double  k;              /**< @todo Подробное описание*/
     double  b;              /**< @todo Подробное описание*/
     Mat previousThreshold;  /**< @todo Подробное описание*/
+    static cv::Vec4i main_left;  /**< @todo Подробное описание*/
+    static cv::Vec4i main_right;  /**< @todo Подробное описание*/
+    std::vector<cv::Point> defaultPoints; /**< @todo Подробное описание*/
 
-    std::vector<cv::Point> defaultPoints;
-
+    /**
+      * @brief Метод, ???
+      * @param point –
+      * @param a –
+      * @param b –
+      * @param c –
+      * @param result –
+      * @todo поправить описание
+      */
     void distanceLinePoint(cv::Point point, float a, float b, float c, float& result);
+
+    /**
+      * @brief Метод, ???
+      * @param line –
+      * @param point1 -
+      * @param point2 -
+      * @todo поправить описание
+      */
     void convectVec4iToPoints(cv::Vec4i line, cv::Point& point1, cv::Point& point2);
-    void convectPointsToVec4i(cv::Point point1s, cv::Point point2, cv::Vec4i& line);
+
+    /**
+      * @brief Метод, ???
+      * @param point1 -
+      * @param point2 -
+      * @param line –
+      * @todo поправить описание
+      */
+    void convectPointsToVec4i(cv::Point point1, cv::Point point2, cv::Vec4i& line);
 
     /**
       * @brief Метод, совершающий огрубление изображения
@@ -61,8 +87,34 @@ private:
      */
     void carDataFinder(cv::Vec4i& main_line, bool right);
 
+    /**
+      * @brief Метод, ???
+      * @param lines –
+      * @param edges -
+      * @param temp_frame -
+      * @todo поправить описание
+      */
     void processLines(std::vector<cv::Vec4i>& lines, Mat edges, Mat temp_frame);
+
+    /**
+      * @brief Метод, ???
+      * @param lines –
+      * @param main_line -
+      * @param defaultLine -
+      * @param output -
+      * @todo поправить описание
+      */
     void processSide (std::vector<cv::Vec4i> lines, cv::Vec4i& main_line, cv::Vec4i defaultLine, cv::Mat output);
+
+    /**
+      * @brief Метод, ???
+      * @param a –
+      * @param b -
+      * @param c -
+      * @param x -
+      * @todo поправить описание
+      */
+    void getCoordinates(float a, float b, float c, int& x, int& y, bool findY);
 
 public:
     /// @name Конструкторы
