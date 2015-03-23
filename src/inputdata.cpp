@@ -20,7 +20,7 @@ void InputData::VideoInput(int mode = TEST_MODE)
             videoRes.height = (int) stream.get(CV_CAP_PROP_FRAME_HEIGHT);
             videoRes.width  = (int) stream.get(CV_CAP_PROP_FRAME_WIDTH);
             videoROI.x = 0;
-            videoROI.y = videoRes.height/2;
+            videoROI.y = 5*videoRes.height/8;
             videoROI.width  = videoRes.width  - videoROI.x;
             videoROI.height = videoRes.height - videoROI.y;
             break;

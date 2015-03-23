@@ -100,24 +100,28 @@ void Controller::keyStatus()
 {
     switch (cv::waitKey(1))
     {
-    case 27://esc
+    case 27: //esc
     case 'q':
     {
+        /// 'q' или Esc - выйти из программы
         isWork = false;
         break;
     }
     case 'r':
     {
+        /// 'r' - начать обработку данных
         isRun = true;
         break;
     }
     case 's':
     {
+        /// 's' - остановить обработку данных
         isRun = false;
         break;
     }
     case 'n':
     {
+        /// 'n' - прочитать следующее изображение
         readImage();
         break;
     }

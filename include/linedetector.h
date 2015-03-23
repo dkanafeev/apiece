@@ -28,10 +28,12 @@ private:
     int     angle;          /**< @todo Подробное описание*/
     int     delta;          /**< @todo Подробное описание*/
     int     carSpeed;       /**< Скорость автомобиля*/
-    int     carAngle;       /**< Угол поворота колес*/
+    float     carAngle;       /**< Угол поворота колес*/
     double  k;              /**< @todo Подробное описание*/
     double  b;              /**< @todo Подробное описание*/
     Mat previousThreshold;  /**< @todo Подробное описание*/
+    cv::Vec4i default_left; /**< @todo Подробное описание*/
+    cv::Vec4i default_right; /**< @todo Подробное описание*/
     static cv::Vec4i main_left;  /**< @todo Подробное описание*/
     static cv::Vec4i main_right;  /**< @todo Подробное описание*/
     std::vector<cv::Point> defaultPoints; /**< @todo Подробное описание*/
@@ -85,7 +87,7 @@ private:
      * @attention в данный момент незавершен
      * @todo Доделать определение скорости автомобиля и угла поворота колес
      */
-    void carDataFinder(cv::Vec4i& main_line, bool right);
+    void carDataFinder(Mat);
 
     /**
       * @brief Метод, ???
@@ -99,12 +101,11 @@ private:
     /**
       * @brief Метод, ???
       * @param lines –
-      * @param main_line -
-      * @param defaultLine -
       * @param output -
+      * @param isRight -
       * @todo поправить описание
       */
-    void processSide (std::vector<cv::Vec4i> lines, cv::Vec4i& main_line, cv::Vec4i defaultLine, cv::Mat output);
+    void processSide(std::vector<cv::Vec4i> lines, cv::Mat output, bool isRight);
 
     /**
       * @brief Метод, ???
