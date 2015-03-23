@@ -9,6 +9,7 @@
 #include <map>
 
 using cv::Vec2i;
+using cv::Vec4i;
 using cv::Mat;
 using cv::Scalar;
 using cv::Point;
@@ -20,23 +21,14 @@ using cv::Point;
 class LineDetector
 {
 private:
-    int     *lastPos;       /**< @todo Подробное описание*/
-    int     sizeLastPos;    /**< @todo Подробное описание*/
-    double  alpha;          /**< @todo Подробное описание*/
-    double  beta;           /**< @todo Подробное описание*/
-    double  gamma;          /**< @todo Подробное описание*/
-    int     angle;          /**< @todo Подробное описание*/
-    int     delta;          /**< @todo Подробное описание*/
-    int     carSpeed;       /**< Скорость автомобиля*/
-    float     carAngle;       /**< Угол поворота колес*/
-    double  k;              /**< @todo Подробное описание*/
-    double  b;              /**< @todo Подробное описание*/
-    Mat previousThreshold;  /**< @todo Подробное описание*/
-    cv::Vec4i default_left; /**< @todo Подробное описание*/
-    cv::Vec4i default_right; /**< @todo Подробное описание*/
-    static cv::Vec4i main_left;  /**< @todo Подробное описание*/
-    static cv::Vec4i main_right;  /**< @todo Подробное описание*/
-    std::vector<cv::Point> defaultPoints; /**< @todo Подробное описание*/
+    int     carSpeed;           /**< Скорость автомобиля*/
+    float   carAngle;           /**< Угол поворота колес*/
+    Mat previousThreshold;      /**< @todo Подробное описание*/
+    Vec4i default_left;     /**< @todo Подробное описание*/
+    Vec4i default_right;    /**< @todo Подробное описание*/
+    static Vec4i main_left;  /**< @todo Подробное описание*/
+    static Vec4i main_right;  /**< @todo Подробное описание*/
+    std::vector<Point> defaultPoints; /**< @todo Подробное описание*/
 
     /**
       * @brief Метод, ???
@@ -47,7 +39,7 @@ private:
       * @param result –
       * @todo поправить описание
       */
-    void distanceLinePoint(cv::Point point, float a, float b, float c, float& result);
+    void distanceLinePoint(Point point, float a, float b, float c, float& result);
 
     /**
       * @brief Метод, ???
@@ -56,7 +48,7 @@ private:
       * @param point2 -
       * @todo поправить описание
       */
-    void convectVec4iToPoints(cv::Vec4i line, cv::Point& point1, cv::Point& point2);
+    void convectVec4iToPoints(Vec4i line, Point& point1, Point& point2);
 
     /**
       * @brief Метод, ???
@@ -65,7 +57,7 @@ private:
       * @param line –
       * @todo поправить описание
       */
-    void convectPointsToVec4i(cv::Point point1, cv::Point point2, cv::Vec4i& line);
+    void convectPointsToVec4i(Point point1, Point point2, Vec4i& line);
 
     /**
       * @brief Метод, совершающий огрубление изображения
@@ -91,12 +83,11 @@ private:
 
     /**
       * @brief Метод, ???
-      * @param lines –
-      * @param edges -
+      * @param lines –      
       * @param temp_frame -
       * @todo поправить описание
       */
-    void processLines(std::vector<cv::Vec4i>& lines, Mat edges, Mat temp_frame);
+    void processLines(std::vector<Vec4i>& lines, Mat temp_frame);
 
     /**
       * @brief Метод, ???
@@ -105,7 +96,7 @@ private:
       * @param isRight -
       * @todo поправить описание
       */
-    void processSide(std::vector<cv::Vec4i> lines, cv::Mat output, bool isRight);
+    void processSide(std::vector<Vec4i> lines, cv::Mat output, bool isRight);
 
     /**
       * @brief Метод, ???
@@ -113,20 +104,17 @@ private:
       * @param b -
       * @param c -
       * @param x -
+      * @param y -
+      * @param findY -
       * @todo поправить описание
       */
     void getCoordinates(float a, float b, float c, int& x, int& y, bool findY);
 
 public:
-    /// @name Конструкторы
-    /// @{
+
     /// @brief Конструктор по умолчанию
+    /// @todo необходимо дописать!
     LineDetector        ();
-    /// @deprecated Конструктор по умолчанию 1
-    /// LineDetector        (Mat srcImgOCVROI);
-    /// @deprecated Конструктор по умолчанию 2
-    /// LineDetector        (IplImage* srcImgOCVROI);
-    /// @}
 
     /// @brief Деструктор по умолчанию
     /// @todo необходимо дописать!
@@ -137,9 +125,10 @@ public:
      * @param srcImg - исходное изображение
      * @param defaultPoints - ???
      */
-    void detectLine     (Mat &srcImg, std::vector<cv::Point>   defaultPoints);
+    void detectLine     (Mat &srcImg, std::vector<Point>   defaultPoints);
 
-    /** @brief Метод, возвращающий расчитанные даннные скорости автомобиля
+    /**
+     * @brief Метод, возвращающий расчитанные даннные скорости автомобиля
      * и угла поворта колес.
      * @return контейнер, содержащий два целочисленных значений в диапазоне
      * от 0 до 100, где первое значение является углом поворота колес, а

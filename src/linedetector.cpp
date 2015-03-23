@@ -1,18 +1,13 @@
 #include <include/linedetector.h>
 
-cv::Vec4i LineDetector::main_left  = cv::Vec4i(0,0,0,0);
-cv::Vec4i LineDetector::main_right = cv::Vec4i(0,0,0,0);
+Vec4i LineDetector::main_left  = Vec4i(0,0,0,0);
+Vec4i LineDetector::main_right = Vec4i(0,0,0,0);
 
 LineDetector::LineDetector()
 {
-    alpha = 0.5;
-    beta = 0.5;
-    gamma = 0;
-    delta = 5;
-    angle = 30;
 }
 
-void LineDetector::detectLine(Mat &srcImg, std::vector<cv::Point> defaultPoints)
+void LineDetector::detectLine(Mat &srcImg, std::vector<Point> defaultPoints)
 {
     this->defaultPoints = defaultPoints;
     houghOpenCV(srcImg);
@@ -63,13 +58,13 @@ int LineDetector::houghOpenCV(const Mat &srcImg)
     cv::cvtColor( cannyImg, dstImg, CV_GRAY2BGR );
 
     // хранилище памяти для хранения найденных линий
-    std::vector<cv::Vec4i> lines;
+    std::vector<Vec4i> lines;
 
     // нахождение линий
     cv::HoughLinesP( cannyImg, lines, 1, CV_PI/180, 80, 10, 10 );
 
     // сортировка и уточнение линии
-    processLines(lines, cannyImg, srcImg);
+    processLines(lines, srcImg);
 
     // показываем
 //    cv::namedWindow("Lines", CV_WINDOW_AUTOSIZE);
@@ -88,10 +83,10 @@ int LineDetector::houghOpenCV(const Mat &srcImg)
     return 0;
 }
 
-void LineDetector::processLines(std::vector<cv::Vec4i>& lines, Mat edges, Mat temp_frame)
+void LineDetector::processLines(std::vector<Vec4i>& lines, Mat temp_frame)
 {
     // разделим правые и левые линии
-    std::vector<cv::Vec4i> left, right;
+    std::vector<Vec4i> left, right;
     int delta_angle = 10;
 
     for ( size_t i = 0; i < lines.size(); i++ )
@@ -115,11 +110,11 @@ void LineDetector::processLines(std::vector<cv::Vec4i>& lines, Mat edges, Mat te
 
         if (midx < temp_frame.size().width/2)
         {
-            left.push_back(cv::Vec4i(lines[i][0], lines[i][1], lines[i][2], lines[i][3]));
+            left.push_back(Vec4i(lines[i][0], lines[i][1], lines[i][2], lines[i][3]));
         }
         else if (midx > temp_frame.size().width/2)
         {
-            right.push_back(cv::Vec4i(lines[i][0], lines[i][1], lines[i][2], lines[i][3]));
+            right.push_back(Vec4i(lines[i][0], lines[i][1], lines[i][2], lines[i][3]));
         }
     }
 
@@ -158,10 +153,10 @@ void LineDetector::processLines(std::vector<cv::Vec4i>& lines, Mat edges, Mat te
     right.clear();
 }
 
-void LineDetector::processSide(std::vector<cv::Vec4i> lines, cv::Mat output, bool isRight)
+void LineDetector::processSide(std::vector<Vec4i> lines, cv::Mat output, bool isRight)
 {
-    cv::Vec4i& defaultLine = isRight ? default_right : default_left;
-    cv::Vec4i& main_line = isRight ? main_right : main_left;
+    Vec4i& defaultLine = isRight ? default_right : default_left;
+    Vec4i& main_line = isRight ? main_right : main_left;
 
     // получаем уравнение прямой defaultLine в виде ax + by + c = 0
     const float aDef = defaultLine[3] - defaultLine[1];
@@ -195,13 +190,13 @@ void LineDetector::processSide(std::vector<cv::Vec4i> lines, cv::Mat output, boo
     float distance_1 = 0;
     float distance_2 = 0;
 
-    std::vector<cv::Vec4i> goodLines;
-    cv::Vec4i tempLine;
+    std::vector<Vec4i> goodLines;
+    Vec4i tempLine;
 
-    for (std::vector<cv::Vec4i>::iterator line = lines.begin(); line < lines.end(); line++)
+    for (std::vector<Vec4i>::iterator line = lines.begin(); line < lines.end(); line++)
     {
-        cv::Point point1;
-        cv::Point point2;
+        Point point1;
+        Point point2;
         convectVec4iToPoints(*line, point1, point2);
         distanceLinePoint(point1, aDef, bDef, cDef, distance_1);
         distanceLinePoint(point2, aDef, bDef, cDef, distance_2);
@@ -237,7 +232,7 @@ void LineDetector::processSide(std::vector<cv::Vec4i> lines, cv::Mat output, boo
     }
 
     //Для поиска main_line найдем среднее значение точек "хороших" линий
-    for (std::vector<cv::Vec4i>::iterator line = goodLines.begin(); line < goodLines.end(); line++)
+    for (std::vector<Vec4i>::iterator line = goodLines.begin(); line < goodLines.end(); line++)
     {
         // выводим промежуточчный результат - близкие линии
 //        cv::line(output, Point((*line)[0], (*line)[1]),
@@ -291,29 +286,31 @@ void LineDetector::carDataFinder(cv::Mat output)
               Point(deltaDD, output.size().height), Scalar(0,255,255), 3, 8 );
     carAngle = atan2 (main_left[3], (deltaDD - deltaUM)) * 180.0 / CV_PI - 45;
 
+    carSpeed = abs(carAngle - 45) < 8 ? 20 : abs(carAngle - 45) < 16 ? 10 : 5;
+
     std::ostringstream strA;
     strA << " Car angle: " << carAngle;
-    cv::putText(output, strA.str(), cv::Point(5,50), CV_FONT_HERSHEY_PLAIN, 1, Scalar(0,0,250));
+    cv::putText(output, strA.str(), Point(5,50), CV_FONT_HERSHEY_PLAIN, 1, Scalar(0,0,250));
 
     std::ostringstream strS;
     strS << " Car speed: " << carSpeed;
-    cv::putText(output, strS.str(), cv::Point(5,65), CV_FONT_HERSHEY_PLAIN, 1, Scalar(0,0,250));
+    cv::putText(output, strS.str(), Point(5,65), CV_FONT_HERSHEY_PLAIN, 1, Scalar(0,0,250));
 
     std::ostringstream strD;
     strD << " Direction: " << ( (carAngle > 48) ? "/// RIGHT" : (carAngle < 42) ? "\\\\\\ LEFT" : "||| F" );
-    cv::putText(output, strD.str(), cv::Point(5,80), CV_FONT_HERSHEY_PLAIN, 1, Scalar(0,0,250));
+    cv::putText(output, strD.str(), Point(5,80), CV_FONT_HERSHEY_PLAIN, 1, Scalar(0,0,250));
 
     return;
 }
 
-void LineDetector::convectVec4iToPoints(cv::Vec4i line, cv::Point& point1, cv::Point& point2)
+void LineDetector::convectVec4iToPoints(Vec4i line, Point& point1, Point& point2)
 {
     point1.x = line[0];
     point1.y = line[1];
     point2.x = line[2];
     point2.y = line[3];
 }
-void LineDetector::convectPointsToVec4i(cv::Point point1, cv::Point point2, cv::Vec4i& line)
+void LineDetector::convectPointsToVec4i(Point point1, Point point2, Vec4i& line)
 {
     line[0] = point1.x;
     line[1] = point1.y;
@@ -321,7 +318,7 @@ void LineDetector::convectPointsToVec4i(cv::Point point1, cv::Point point2, cv::
     line[3] = point2.y;
 }
 
-void LineDetector::distanceLinePoint(cv::Point point, float a, float b, float c, float& result)
+void LineDetector::distanceLinePoint(Point point, float a, float b, float c, float& result)
 {
     result = abs(a*point.x + b*point.y + c)/sqrt(powl(a, 2) + powl(b, 2));
 }
