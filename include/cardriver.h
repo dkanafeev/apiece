@@ -1,7 +1,6 @@
 #ifndef CARDRIVER_H
 #define CARDRIVER_H
 
-#include <QtSerialPort/QSerialPort>
 #include <opencv2/core.hpp>
 
 using cv::Vec2i;
@@ -28,8 +27,7 @@ public:
         SIGN_DETECTOR  /**< детектор знаков */
     };
     /// @name Группа методов для отправки данных на МК
-    /// @attention В данной версии реализован механизм отправки только
-    /// сообщений о скорости и угле поворота колес.
+    /// @attention В данной версии данные механизмы не реализованы
     /// @{
     /// @brief Отправляет данные о скорости и угле поворота колес на микроконтроллер
     void sendData(Sender, Vec2i);

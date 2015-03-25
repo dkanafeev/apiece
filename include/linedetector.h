@@ -6,7 +6,6 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
-#include <map>
 
 using cv::Vec2i;
 using cv::Vec4i;
@@ -23,12 +22,12 @@ class LineDetector
 private:
     int     carSpeed;           /**< Скорость автомобиля*/
     float   carAngle;           /**< Угол поворота колес*/
-    Mat previousThreshold;      /**< @todo Подробное описание*/
-    Vec4i default_left;     /**< @todo Подробное описание*/
-    Vec4i default_right;    /**< @todo Подробное описание*/
-    static Vec4i main_left;  /**< @todo Подробное описание*/
-    static Vec4i main_right;  /**< @todo Подробное описание*/
-    std::vector<Point> defaultPoints; /**< @todo Подробное описание*/
+    Vec4i default_left;         /**< положение левой линии разметки, определенное пользователем*/
+    Vec4i default_right;        /**< положение правой линии разметки, определенное пользователем*/
+    static Vec4i main_left;     /**< найденая левая линия разметки*/
+    static Vec4i main_right;    /**< найденная правая линия разметки*/
+
+    std::vector<Point> defaultPoints; /**< Точки линий, заданные пользователем*/
 
     /**
       * @brief Метод, ???
@@ -42,20 +41,18 @@ private:
     void distanceLinePoint(Point point, float a, float b, float c, float& result);
 
     /**
-      * @brief Метод, ???
-      * @param line –
-      * @param point1 -
-      * @param point2 -
-      * @todo поправить описание
+      * @brief Метод, конвертирущий cv::Vec4i в два cv::Point
+      * @param line – входящий cv::Vec4i
+      * @param point1 - исходящая точка 1
+      * @param point2 - исходящая точка 2
       */
     void convectVec4iToPoints(Vec4i line, Point& point1, Point& point2);
 
     /**
-      * @brief Метод, ???
-      * @param point1 -
-      * @param point2 -
-      * @param line –
-      * @todo поправить описание
+      * @brief Метод, конвертирующий два cv::Point в cv::Vec4i
+      * @param point1 - входящая точка 1
+      * @param point2 - входящая точка 1
+      * @param line – исходящий cv::Vec4i
       */
     void convectPointsToVec4i(Point point1, Point point2, Vec4i& line);
 
@@ -63,50 +60,45 @@ private:
       * @brief Метод, совершающий огрубление изображения
       * @param image – ссылка на изображение
       * @param div - параметр, отвечащий за уровень огрубления
-      * @todo поправить описание
       */
     void colorReduce    (Mat& image, int div=64);
 
     /**
      * @brief Главный метод, осуществляет поиск линий и расчет скорости автомобиля
-     * и улга поворота колес
+     * и угла поворота колес
      * @param srcImg – исходное изображение
      */
     int  houghOpenCV    (const Mat &srcImg);
 
     /**
      * @brief Метод, расчитывающий скорость автомобиля и углы поворота колес
-     * @attention в данный момент незавершен
-     * @todo Доделать определение скорости автомобиля и угла поворота колес
+     * @param cv::Mat для вывода найденой информации
      */
     void carDataFinder(Mat);
 
     /**
-      * @brief Метод, ???
-      * @param lines –      
-      * @param temp_frame -
-      * @todo поправить описание
+      * @brief Метод, обрабатывающий линии, найденые с помощью преобразования Hough
+      * @param lines – вектор найденых линий
+      * @param temp_frame - cv::Mat для вывода найденой информации
       */
     void processLines(std::vector<Vec4i>& lines, Mat temp_frame);
 
     /**
-      * @brief Метод, ???
-      * @param lines –
-      * @param output -
-      * @param isRight -
-      * @todo поправить описание
+      * @brief Метод, обрабаытвающщий линии одной стороны полосы
+      * @param lines – вектор линий одной стороны полсы
+      * @param output - cv::Mat для вывода найденой информации
+      * @param isRight - определяет, какую сторону мы будем обрабатывать (true - правую)
       */
     void processSide(std::vector<Vec4i> lines, cv::Mat output, bool isRight);
 
     /**
-      * @brief Метод, ???
-      * @param a –
-      * @param b -
-      * @param c -
-      * @param x -
-      * @param y -
-      * @param findY -
-      * @todo поправить описание
+      * @brief Метод находит координату x или y, принадлежащую прямой  ax + by + c = 0
+      * @param a – коэффициент при x
+      * @param b - коэффициент при y
+      * @param c - свободный член
+      * @param x - ссылка на координату x
+      * @param y - ссылка на координату y
+      * @param findY - определяет, какую координату искать (true - y, false - x)
       */
     void getCoordinates(float a, float b, float c, int& x, int& y, bool findY);
 
@@ -123,7 +115,7 @@ public:
     /**
      * @brief Метод, запускающий детектор линий
      * @param srcImg - исходное изображение
-     * @param defaultPoints - ???
+     * @param defaultPoints - точки линий, заданные пользователем
      */
     void detectLine     (Mat &srcImg, std::vector<Point>   defaultPoints);
 

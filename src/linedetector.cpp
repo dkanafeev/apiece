@@ -1,7 +1,8 @@
 #include <include/linedetector.h>
 
-Vec4i LineDetector::main_left  = Vec4i(0,0,0,0);
-Vec4i LineDetector::main_right = Vec4i(0,0,0,0);
+//необходимо инициализировать для работы с mouseCallBack
+cv::Vec4i LineDetector::main_left  = cv::Vec4i(0,0,0,0);
+cv::Vec4i LineDetector::main_right = cv::Vec4i(0,0,0,0);
 
 LineDetector::LineDetector()
 {
@@ -15,16 +16,16 @@ void LineDetector::detectLine(Mat &srcImg, std::vector<Point> defaultPoints)
 
 void LineDetector::colorReduce(Mat& image, int div)
 {
-    int nl = image.rows;                    // number of lines
-    int nc = image.cols * image.channels(); // number of elements per line
+    int nl = image.rows;                    // количество линий
+    int nc = image.cols * image.channels(); // количество элементов в одной линии
 
     for (int j = 0; j < nl; j++)
     {
-        // get the address of row j
+        // получчаем адрес линии j
         uchar* data = image.ptr<uchar>(j);
         for (int i = 0; i < nc; i++)
         {
-            // process each pixel
+            // считаем для каждого пискеля
             data[i] = data[i] / div * div + div / 2;
         }
     }
@@ -155,13 +156,13 @@ void LineDetector::processLines(std::vector<Vec4i>& lines, Mat temp_frame)
 
 void LineDetector::processSide(std::vector<Vec4i> lines, cv::Mat output, bool isRight)
 {
-    Vec4i& defaultLine = isRight ? default_right : default_left;
+    Vec4i& default_line = isRight ? default_right : default_left;
     Vec4i& main_line = isRight ? main_right : main_left;
 
-    // получаем уравнение прямой defaultLine в виде ax + by + c = 0
-    const float aDef = defaultLine[3] - defaultLine[1];
-    const float bDef = defaultLine[0] - defaultLine[2];
-    const float cDef = defaultLine[0] * (-aDef) + defaultLine[1] * (-bDef);
+    // получаем уравнение прямой default_line в виде ax + by + c = 0
+    const float aDef = default_line[3] - default_line[1];
+    const float bDef = default_line[0] - default_line[2];
+    const float cDef = default_line[0] * (-aDef) + default_line[1] * (-bDef);
 
     // преобразование отрезков, на весь roi
     int x;
@@ -169,17 +170,17 @@ void LineDetector::processSide(std::vector<Vec4i> lines, cv::Mat output, bool is
 
     y = 0;
     getCoordinates(aDef, bDef, cDef, x, y, false);
-    defaultLine[0] = x;
-    defaultLine[1] = y;
+    default_line[0] = x;
+    default_line[1] = y;
 
     y = output.size().height;
     getCoordinates(aDef, bDef, cDef, x, y, false);
-    defaultLine[2] = x;
-    defaultLine[3] = y;
+    default_line[2] = x;
+    default_line[3] = y;
 
     // вывод линии на экран
-    cv::line(output, Point(defaultLine[0], defaultLine[1]),
-              Point(defaultLine[2], defaultLine[3]), Scalar(0,0,255), 3, 8 );
+    cv::line(output, Point(default_line[0], default_line[1]),
+              Point(default_line[2], default_line[3]), Scalar(0,0,255), 3, 8 );
 
     // начинаем работы по поиску главной линии
     const float h1_const = 50.0;
@@ -201,7 +202,7 @@ void LineDetector::processSide(std::vector<Vec4i> lines, cv::Mat output, bool is
         distanceLinePoint(point1, aDef, bDef, cDef, distance_1);
         distanceLinePoint(point2, aDef, bDef, cDef, distance_2);
 
-        // выбираем отрезки, близкие к defaultLine
+        // выбираем отрезки, близкие к default_line
         if (distance_1 < h1 && distance_2 < h2)
         {
             // запоминаем их
@@ -248,11 +249,13 @@ void LineDetector::processSide(std::vector<Vec4i> lines, cv::Mat output, bool is
     sum_2 /= counter;
     sum_3 /= counter;
 
-    // получаем прямую и записываем в main_line
+    // получаем прямую
 
     const float aMain = sum_3 - sum_1;
     const float bMain = sum_0 - sum_2;
     const float cMain = sum_0 * (-aMain) + sum_1 * (-bMain);
+
+    // Примитвино проверяем ее на правильность - уг
 
     y = 0;
     getCoordinates(aMain, bMain, cMain, x, y, false);
@@ -263,7 +266,6 @@ void LineDetector::processSide(std::vector<Vec4i> lines, cv::Mat output, bool is
     getCoordinates(aMain, bMain, cMain, x, y, false);
     main_line[2] = x;
     main_line[3] = y;
-
     goodLines.clear();
 }
 
